@@ -344,8 +344,6 @@
     <EmbeddedResource Include="ecma_3\Statements\regress-324650.js" />
     <EmbeddedResource Include="ecma_3\Statements\regress-444979.js" />
     <EmbeddedResource Include="ecma_3\Statements\regress-74474-001.js" />
-    <EmbeddedResource Include="ecma_3\Statements\regress-74474-002.js" />
-    <EmbeddedResource Include="ecma_3\Statements\regress-74474-003.js" />
     <EmbeddedResource Include="ecma_3\Statements\regress-83532-001.js" />
     <EmbeddedResource Include="ecma_3\Statements\regress-83532-002.js" />
     <EmbeddedResource Include="ecma_3\Statements\shell.js" />

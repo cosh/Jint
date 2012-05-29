@@ -16,6 +16,4 @@ CoreDeveloper.userprefs
 *.user
 *.userprefs
 *.resources
-*.vsmdi
-*.testrunconfig
 TestResults/
