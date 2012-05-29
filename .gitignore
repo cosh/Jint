@@ -1,6 +1,21 @@
-# Build Folders (you can keep bin if you'd like, to store dlls and pdbs)
-bin
-obj
 
-# mstest test results
-TestResults
+.DS_Store
+*.pdb
+*.dll
+*.vshost
+*.vs10x
+*.suo
+[Bb]in/
+[Dd]ebug/
+[Rr]elease/
+*.pidb
+_ReSharper*/
+CoreDeveloper.suo
+CoreDeveloper.userprefs
+*.sln.docstates
+*.user
+*.userprefs
+*.resources
+*.vsmdi
+*.testrunconfig
+TestResults/
