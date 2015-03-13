@@ -471,8 +471,7 @@ bar');
         }
 
         [TestMethod]
-        public void ShouldAllowSecuritySandBox()
-        {
+        public void ShouldAllowSecuritySandBox() {
             var userDirectory = Path.GetTempPath();
 
             const string script = @"
@@ -486,8 +485,7 @@ bar');
         }
 
         [TestMethod]
-        public void ShouldHandleNullableValueTypes()
-        {
+        public void ShouldHandleNullableValueTypes() {
             const string script = @"
                 result.Int32 = input ? ToInt32(input) : null;
             ";
