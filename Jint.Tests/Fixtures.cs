@@ -489,26 +489,14 @@ bar');
         public void ShouldHandleNullableValueTypes()
         {
             const string script = @"
-                assertIsNull(null);
-                assertIsNull(undefined);
-                assertIsNotNull(1);
-
-                var i;
-                assertIsNull(i);
-
-                i = null;
-                assertIsNull(i);
-
-                i = undefined;
-                assertIsNull(i);
-
-                i = 1;
-                assertIsNotNull(i);
+                result.Int32 = input ? ToInt32(input) : null;
             ";
 
+            var result = new TypeWithNullableValueTypeProperty();
+
             new JintEngine()
-                .SetFunction("assertIsNull", new Action<double?>((a) => Assert.IsNull(a)))
-                .SetFunction("assertIsNotNull", new Action<double?>((a) => Assert.IsNotNull(a)))
+                .SetParameter("input", "")
+                .SetParameter("result", result)
                 .Run(script);
         }
 
@@ -1810,5 +1798,10 @@ var fakeButton = new Test.FakeButton();");
         public void Write(object value) {
             Console.WriteLine(value);
         }
+    }
+
+    public class TypeWithNullableValueTypeProperty
+    {
+        public int? Int32 { get; set; }
     }
 }
