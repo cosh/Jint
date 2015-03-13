@@ -471,7 +471,8 @@ bar');
         }
 
         [TestMethod]
-        public void ShouldAllowSecuritySandBox() {
+        public void ShouldAllowSecuritySandBox()
+        {
             var userDirectory = Path.GetTempPath();
 
             const string script = @"
@@ -481,6 +482,33 @@ bar');
             new JintEngine()
                 .SetParameter("userDir", userDirectory)
                 .AddPermission(new FileIOPermission(FileIOPermissionAccess.PathDiscovery, userDirectory))
+                .Run(script);
+        }
+
+        [TestMethod]
+        public void ShouldHandleNullableValueTypes()
+        {
+            const string script = @"
+                assertIsNull(null);
+                assertIsNull(undefined);
+                assertIsNotNull(1);
+
+                var i;
+                assertIsNull(i);
+
+                i = null;
+                assertIsNull(i);
+
+                i = undefined;
+                assertIsNull(i);
+
+                i = 1;
+                assertIsNotNull(i);
+            ";
+
+            new JintEngine()
+                .SetFunction("assertIsNull", new Action<double?>((a) => Assert.IsNull(a)))
+                .SetFunction("assertIsNotNull", new Action<double?>((a) => Assert.IsNotNull(a)))
                 .Run(script);
         }
 
