@@ -204,7 +204,12 @@ namespace Jint
         public T MarshalJsValue<T>(JsInstance value)
         {
             if (value == JsNull.Instance || value == JsUndefined.Instance)
-                return default(T);
+            {
+                if (!typeof(T).IsValueType || typeof(T).IsGenericType && typeof(T).GetGenericTypeDefinition() == typeof(Nullable<>))
+                    return default(T);
+
+                throw new JintException(string.Format("Cannot cast null value to {0}", typeof(T).Name));
+            }
 
             if (value.Value is T)
                 return (T)value.Value;
