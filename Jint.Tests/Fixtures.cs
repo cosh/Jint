@@ -484,6 +484,48 @@ bar');
                 .Run(script);
         }
 
+        [TestMethod]
+        public void ShouldHandleNullableValueTypes() {
+            const string script = @"
+                result.NullableInt32 = input ? ToInt32(input) : null;
+                result.String = null;
+            ";
+
+            var result = new TypeWithNullableValueTypeProperty
+            {
+                NullableInt32 = 1,
+                String = "",
+            };
+
+            new JintEngine()
+                .SetParameter("input", "")
+                .SetParameter("result", result)
+                .Run(script);
+
+            Assert.IsNull(result.NullableInt32);
+            Assert.IsNull(result.String);
+        }
+
+        [TestMethod]
+        public void ShouldHandleNonNullableValueTypes()
+        {
+            const string script = @"
+                result.Int32 = null;
+            ";
+
+            var result = new TypeWithNullableValueTypeProperty();
+
+            try
+            {
+                new JintEngine()
+                        .SetParameter("result", result)
+                        .Run(script);
+            }
+            catch (JintException je)
+            {
+                Assert.IsTrue(je.Message.Contains("Cannot cast null value to Int32"));
+            }
+        }
 
         [TestMethod]
         public void ShouldSetClrProperties() {
@@ -1782,5 +1824,12 @@ var fakeButton = new Test.FakeButton();");
         public void Write(object value) {
             Console.WriteLine(value);
         }
+    }
+
+    public class TypeWithNullableValueTypeProperty
+    {
+        public int Int32 { get; set; }
+        public int? NullableInt32 { get; set; }
+        public string String { get; set; }
     }
 }

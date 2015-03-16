@@ -203,54 +203,48 @@ namespace Jint
         /// <returns>A converted native velue</returns>
         public T MarshalJsValue<T>(JsInstance value)
         {
+            if (value == JsNull.Instance || value == JsUndefined.Instance)
+            {
+                if (!typeof(T).IsValueType || typeof(T).IsGenericType && typeof(T).GetGenericTypeDefinition() == typeof(Nullable<>))
+                    return default(T);
+
+                throw new JintException(string.Format("Cannot cast null value to {0}", typeof(T).Name));
+            }
+
             if (value.Value is T)
-            {
                 return (T)value.Value;
-            }
-            else
+            
+            if (typeof(T).IsArray)
             {
-                if (typeof(T).IsArray)
-                {
-                    if (value == null || value == JsUndefined.Instance || value == JsNull.Instance)
-                        return default(T);
-                    if (m_global.ArrayClass.HasInstance(value as JsObject))
-                    {
-                        Delegate marshller;
-                        if (!m_arrayMarshllers.TryGetValue(typeof(T), out marshller))
-                            m_arrayMarshllers[typeof(T)] = marshller = Delegate.CreateDelegate(
-                                typeof(Delegates.Func<JsObject, T>),
-                                this,
-                                typeof(Marshaller)
-                                    .GetMethod("MarshalJsFunctionHelper")
-                                    .MakeGenericMethod(typeof(T).GetElementType())
-                            );
+                if (!m_global.ArrayClass.HasInstance(value as JsObject))
+                    throw new JintException("Array is required");
 
-                        return ((Delegates.Func<JsObject, T>)marshller)(value as JsObject);
-                    }
-                    else
-                    {
-                        throw new JintException("Array is required");
-                    }
-                }
-                else if (typeof(Delegate).IsAssignableFrom(typeof(T)))
-                {
-                    if (value == null || value == JsUndefined.Instance || value == JsNull.Instance)
-                        return default(T);
+                Delegate marshller;
+                if (!m_arrayMarshllers.TryGetValue(typeof(T), out marshller))
+                    m_arrayMarshllers[typeof(T)] = marshller = Delegate.CreateDelegate(
+                        typeof(Delegates.Func<JsObject, T>),
+                        this,
+                        typeof(Marshaller)
+                            .GetMethod("MarshalJsFunctionHelper")
+                            .MakeGenericMethod(typeof(T).GetElementType())
+                        );
 
-                    if (! (value is JsFunction) )
-                        throw new JintException("Can't convert a non function object to a delegate type");
-                    return (T)MarshalJsFunctionHelper(value as JsFunction, typeof(T));
-                }
-                else if (value != JsNull.Instance && value != JsUndefined.Instance && value is T)
-                {
-                    return (T)(object)value;
-                }
-                else
-                {
-                    // JsNull and JsUndefined will fall here and become a nulls
-                    return (T)Convert.ChangeType(value.Value, typeof(T));
-                }
+                return ((Delegates.Func<JsObject, T>)marshller)(value as JsObject);
             }
+            
+            if (typeof(Delegate).IsAssignableFrom(typeof(T)))
+            {
+                if (! (value is JsFunction) )
+                    throw new JintException("Can't convert a non function object to a delegate type");
+                return (T)MarshalJsFunctionHelper(value as JsFunction, typeof(T));
+            }
+            
+            if (value is T)
+            {
+                return (T)(object)value;
+            }
+
+            return (T)Convert.ChangeType(value.Value, typeof(T));
         }
 
         /// <summary>
